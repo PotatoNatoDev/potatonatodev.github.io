@@ -1,11 +1,96 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Nathaniel Rayman</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home</title>
+<style>
+  body { margin: 0; background: #07080c; color: #fff; font-family: system-ui, sans-serif; }
+  .hero { position: relative; height: 100vh; overflow: hidden; }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  header { position: absolute; left: 0; right: 0; bottom: 10vh; text-align: center; }
+  h1 { margin: 0; font-size: 3rem; }
+  header p { margin: .5rem 0 0; opacity: .6; }
+  nav { margin-top: 1.5rem; }
+  nav a { color: #fff; margin: 0 .8rem; text-decoration: none; opacity: .75; }
+  nav a:hover { opacity: 1; text-decoration: underline; }
+</style>
 </head>
 <body>
+<div class="hero">
+  <header>
     <h1>Nathaniel Rayman</h1>
-    <p>big things coming</p>
+    <p>I like robots :)</p>
+    <nav>
+      <a href="about.html">About</a>
+      <a href="projects.html">Projects</a>
+      <a href="experience.html">Experience</a>
+      <a href="NXR_Resume (3).pdf">Resume</a>
+    </nav>
+  </header>
+</div>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+const hero = document.querySelector('.hero');
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+hero.prepend(renderer.domElement);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+camera.position.z = 9;
+
+scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+const light = new THREE.DirectionalLight(0xffffff, 3);
+light.position.set(4, 6, 6);
+scene.add(light);
+
+const colors = [0xe8262b, 0x1fa84f, 0x1e5bd6, 0xffc20e, 0xff7a1a, 0x8a3ffc];
+const cube = new THREE.Mesh(
+  new THREE.BoxGeometry(2.2, 2.2, 2.2),
+  colors.map(c => new THREE.MeshStandardMaterial({ color: c, roughness: 0.3 }))
+);
+scene.add(cube);
+
+function resize() {
+  renderer.setSize(hero.clientWidth, hero.clientHeight);
+  camera.aspect = hero.clientWidth / hero.clientHeight;
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize);
+resize();
+
+// Mouse position, from -1 to 1 across the window
+const mouse = { x: 0, y: 0 };
+const smooth = { x: 0, y: 0 };
+addEventListener('pointermove', (ev) => {
+  mouse.x = (ev.clientX / innerWidth) * 2 - 1;
+  mouse.y = (ev.clientY / innerHeight) * 2 - 1;
+});
+
+const start = new THREE.Vector3(0, 0, -45);
+const end = new THREE.Vector3(0, 1.2, 0);
+const t0 = performance.now();
+
+renderer.setAnimationLoop((now) => {
+  const p = Math.min((now - t0) / 2000, 1);   // 3 second intro
+  const e = 1 - Math.pow(1 - p, 3);           // ease out
+
+  // ease toward the mouse so the movement is smooth
+  smooth.x += (mouse.x - smooth.x) * 0.05;
+  smooth.y += (mouse.y - smooth.y) * 0.05;
+
+  cube.position.lerpVectors(start, end, e);
+  cube.rotation.set(
+    0.45 + 6.3 * (1 - e) + smooth.y * 0.6,
+    -0.6 + 18.8 * (1 - e) + smooth.x * 1.0,
+    0.08 + 6.3 * (1 - e)
+  );
+  cube.scale.setScalar(0.25 + 0.75 * e);
+  renderer.render(scene, camera);
+});
+</script>
 </body>
 </html>
