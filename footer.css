@@ -1,0 +1,6 @@
+footer { display: flex; justify-content: center; flex-wrap: wrap; gap: .75rem;
+         margin: 0 6vw; padding: 1.5rem 0 2rem; border-top: 1px solid rgba(255,255,255,.12); }
+footer a { color: #fff; text-decoration: none; font-size: .9rem; padding: .4rem 1rem;
+           border: 1px solid rgba(255,255,255,.2); border-radius: 999px; opacity: .75;
+           transition: opacity .2s, background .2s; }
+footer a:hover { opacity: 1; background: rgba(255,255,255,.1); }
